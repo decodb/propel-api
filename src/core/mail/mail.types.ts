@@ -1,7 +1,7 @@
 export enum MailTemplate {
   EMAIL_VERIFICATION = 'email-verification',
   FORGOT_PASSWORD = 'forgot-password',
-  NEW_SIGN_UP = 'new-sign-up',
+  NEW_SIGN_UP = 'alert-admin',
 }
 
 export interface MailOptions {

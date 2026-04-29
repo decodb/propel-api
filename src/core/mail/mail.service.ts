@@ -1,20 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import * as fs from 'fs';
 import * as path from 'path';
 import { MailOptions, MailTemplate } from './mail.types';
-import { getEnv } from 'src/common/config/env';
 
 @Injectable()
 export class MailService {
-  private transporter = nodemailer.createTransport({
-    host: getEnv('MAIL_HOST'),
-    port: parseInt(getEnv('MAIL_PORT'), 10),
-    auth: {
-      user: getEnv('MAIL_USER'),
-      pass: getEnv('MAIL_PASS'),
-    },
-  });
+  private transporter: nodemailer.Transporter;
 
   private readonly subjectMap: Record<MailTemplate, string> = {
     [MailTemplate.EMAIL_VERIFICATION]: 'Verify your email address',
@@ -22,11 +15,23 @@ export class MailService {
     [MailTemplate.NEW_SIGN_UP]: 'New Sign Up',
   };
 
+  constructor(private config: ConfigService) {
+    this.transporter = nodemailer.createTransport({
+      host: this.config.getOrThrow<string>('MAIL_HOST'),
+      port: parseInt(this.config.getOrThrow<string>('MAIL_PORT'), 10),
+      secure: true,
+      auth: {
+        user: this.config.getOrThrow<string>('EMAIL_USER'),
+        pass: this.config.getOrThrow<string>('EMAIL_PASS'),
+      },
+    });
+  }
+
   async sendMail({ to, template, context }: MailOptions): Promise<void> {
     const html = this.renderTemplate(template, context);
 
     await this.transporter.sendMail({
-      from: `"MyApp" <${process.env.EMAIL_USER}>`,
+      from: `"Propel - Mkhwanazi Software " <${this.config.getOrThrow('EMAIL_USER')}>`,
       to,
       subject: this.subjectMap[template],
       html,
@@ -37,10 +42,17 @@ export class MailService {
     template: MailTemplate,
     context: Record<string, string>,
   ): string {
-    const filePath = path.join(__dirname, 'templates', `${template}.html`);
+    const filePath = path.join(
+      process.cwd(),
+      'src',
+      'core',
+      'mail',
+      'templates',
+      `${template}.html`,
+    );
+
     let html = fs.readFileSync(filePath, 'utf-8');
 
-    // Replace {{key}} placeholders with context values
     for (const [key, value] of Object.entries(context)) {
       html = html.replaceAll(`{{${key}}}`, value);
     }
