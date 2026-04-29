@@ -1,0 +1,392 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Industry {
+  TECHNOLOGY
+  HEALTHCARE
+  FINANCE
+  EDUCATION
+  MANUFACTURING
+}
+
+enum CompanyStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum ProjectStatus {
+  PLANNING
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum MessageType {
+  TEXT
+  FILE
+  IMAGE
+}
+
+// ============================================================
+// COMPANY
+// ============================================================
+
+model Company {
+  id              Int           @id @default(autoincrement())
+  name            String        @unique
+  slug            String        @unique
+  industry        Industry
+  website         String?
+  phone           String?
+  status          CompanyStatus @default(PENDING)
+  rejectionReason String?
+  approvedBy      Int?
+  approvedAt      DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  approver     Admin?              @relation("ApprovedBy", fields: [approvedBy], references: [id])
+  users        User[]
+  projects     Project[]
+  profileImage CompanyProfileImage?
+
+  @@map("company")
+}
+
+// ============================================================
+// ADMIN
+// ============================================================
+
+model Admin {
+  id           Int       @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String    @unique
+  passwordHash String
+  isActive     Boolean   @default(true)
+  lastActiveAt DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
+
+  companiesApproved Company[] @relation("ApprovedBy")
+
+  @@map("admin")
+}
+
+// ============================================================
+// USERS
+// ============================================================
+
+model User {
+  id           Int        @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  email        String     @unique
+  passwordHash String
+  role         UserRole   @default(ADMIN)
+  status       UserStatus @default(ACTIVE)
+  isVerified   Boolean    @default(false)
+  lastActiveAt DateTime?
+  deletedAt DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @default(now())
+
+  companyId Int
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  profileImage           UserProfileImage?
+  emailVerificationToken EmailVerificationToken?
+  forgotPasswordTokens   ForgotPasswordToken[]
+
+  projectsCreated Project[]       @relation("ProjectCreatedBy")
+  projectMembers  ProjectMember[]
+  comments        Comment[]
+  tasksAssignedBy Task[]          @relation("TaskAssignedBy")
+  tasksAssignedTo Task[]          @relation("TaskAssignedTo")
+  roomsAsUser1    Room[]          @relation("RoomUser1")
+  roomsAsUser2    Room[]          @relation("RoomUser2")
+  messagesSent    Message[]
+
+  @@map("users")
+}
+
+// ============================================================
+// USER PROFILE IMAGE
+// ============================================================
+
+model UserProfileImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  publicId  String?
+  mimeType  String?
+  format    String?
+  size      Int?     // in bytes
+  createdAt DateTime @default(now())
+
+  userId Int @unique
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("user_profile_image")
+}
+
+// ============================================================
+// COMPANY PROFILE IMAGE
+// ============================================================
+
+model CompanyProfileImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  publicId  String?
+  mimeType  String?
+  format    String?
+  size      Int?     // in bytes
+  createdAt DateTime @default(now())
+
+  companyId Int @unique
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@map("company_profile_image")
+}
+
+// ============================================================
+// TOKENS
+// ============================================================
+
+model EmailVerificationToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  isUsed    Boolean   @default(false)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  userId Int @unique
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("email_verification_token")
+}
+
+model ForgotPasswordToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  isUsed    Boolean   @default(false)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  userId Int
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("forgot_password_token")
+}
+
+// ============================================================
+// PROJECT
+// ============================================================
+
+model Project {
+  id          Int           @id @default(autoincrement())
+  name        String
+  slug        String        @unique
+  description String?
+  status      ProjectStatus @default(PLANNING)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
+  deletedAt DateTime?
+
+  companyId Int
+  createdBy Int
+
+  company Company @relation(fields: [companyId], references: [id])
+  creator User    @relation("ProjectCreatedBy", fields: [createdBy], references: [id])
+
+  members  ProjectMember[]
+  tasks    Task[]
+  comments Comment[]
+
+  @@index([companyId])
+  @@map("project")
+}
+
+// ============================================================
+// PROJECT MEMBERS
+// ============================================================
+
+model ProjectMember {
+  id        Int      @id @default(autoincrement())
+  joinedAt  DateTime @default(now())
+
+  projectId Int
+  userId    Int
+
+  project Project @relation(fields: [projectId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+}
+
+// ============================================================
+// TASK
+// ============================================================
+
+model Task {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  dueAt       DateTime?
+  completedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
+  isDeleted  Boolean @default(false)
+  deletedAt DateTime?
+
+  projectId  Int
+  assignedBy Int?
+  assignedTo Int?
+
+  project  Project @relation(fields: [projectId], references: [id])
+  assigner User?   @relation("TaskAssignedBy", fields: [assignedBy], references: [id])
+  assignee User?   @relation("TaskAssignedTo", fields: [assignedTo], references: [id])
+
+  @@index([projectId])
+  @@index([assignedTo])
+  @@index([assignedBy])
+  @@map("task")
+}
+
+// ============================================================
+// COMMENT
+// ============================================================
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId Int
+  userId    Int
+  parentId  Int?
+
+  project Project   @relation(fields: [projectId], references: [id])
+  user    User      @relation(fields: [userId], references: [id])
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies Comment[] @relation("CommentReplies")
+
+  @@index([projectId])
+  @@index([userId])
+  @@index([parentId])
+  @@map("comment")
+}
+
+// ============================================================
+// ROOM
+// ============================================================
+
+model Room {
+  id            Int       @id @default(autoincrement())
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  user1Id Int
+  user2Id Int
+
+  user1    User      @relation("RoomUser1", fields: [user1Id], references: [id])
+  user2    User      @relation("RoomUser2", fields: [user2Id], references: [id])
+  messages Message[]
+
+  @@unique([user1Id, user2Id])
+  @@map("room")
+}
+
+// ============================================================
+// MESSAGE
+// ============================================================
+
+model Message {
+  id          Int         @id @default(autoincrement())
+  body        String?
+  messageType MessageType @default(TEXT)
+  read        Boolean     @default(false)
+  readAt      DateTime?
+  createdAt   DateTime    @default(now())
+
+  roomId   Int
+  senderId Int
+
+  room   Room @relation(fields: [roomId], references: [id])
+  sender User @relation(fields: [senderId], references: [id])
+  files  File?
+
+  @@index([roomId])
+  @@index([senderId])
+  @@map("message")
+}
+
+// ============================================================
+// FILE
+// ============================================================
+
+model File {
+  id        Int      @id @default(autoincrement())
+  url       String
+  publicId  String?
+  mimeType  String?
+  size      BigInt?  // changed from Int to BigInt
+  createdAt DateTime @default(now())
+
+  messageId Int @unique
+
+  message Message @relation(fields: [messageId], references: [id])
+
+
+  @@map("file")
+}
