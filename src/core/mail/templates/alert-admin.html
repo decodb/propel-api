@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>New Company Registration — Propel</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0F0D11; font-family: Georgia, 'Times New Roman', serif;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #0F0D11; padding: 40px 16px;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+               style="max-width: 560px; background-color: #0f0f12; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 60%, #A78BFA 100%); padding: 36px 40px; text-align: center;">
+              <div style="margin-bottom: 12px;">
+                <svg width="48" height="48" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M26 44 L4 29 L12 29 L26 37 L40 29 L48 29 Z" fill="#ffffff" opacity="0.28"/>
+                  <path d="M26 31 L4 16 L12 16 L26 24 L40 16 L48 16 Z" fill="#ffffff" opacity="0.60"/>
+                  <path d="M26 18 L4 3 L12 3 L26 11 L40 3 L48 3 Z" fill="#ffffff"/>
+                </svg>
+              </div>
+              <div style="font-family: Georgia, 'Times New Roman', serif; font-size: 30px; font-weight: 700; font-style: italic; color: #ffffff; letter-spacing: -0.5px;">
+                Pro<span style="color: #e9d5ff;">p</span>el
+              </div>
+            </td>
+          </tr>
+
+          <!-- Alert strip -->
+          <tr>
+            <td style="background: rgba(124,58,237,0.12); border-bottom: 1px solid rgba(124,58,237,0.2); padding: 12px 40px; text-align: center;">
+              <p style="margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 600; color: #A78BFA; letter-spacing: 0.08em; text-transform: uppercase;">
+                🔔 &nbsp; Admin Notification
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 44px 40px 36px;">
+
+              <!-- Headline -->
+              <h1 style="margin: 0 0 10px; font-family: Georgia, 'Times New Roman', serif; font-size: 24px; font-weight: 700; font-style: italic; color: #ffffff; letter-spacing: -0.5px; text-align: center;">
+                New Company Registration
+              </h1>
+              <p style="margin: 0 0 32px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 15px; font-weight: 300; color: rgba(255,255,255,0.45); line-height: 1.7; text-align: center;">
+                A company has completed email verification and is awaiting your approval.
+              </p>
+
+              <!-- Company details card -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                     style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; margin-bottom: 28px;">
+
+                <!-- Card header -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <p style="margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px; font-weight: 600; color: #A78BFA; letter-spacing: 0.08em; text-transform: uppercase;">
+                      Company Details
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Row: Company name -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.3); width: 40%;">Company Name</td>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; font-weight: 500; color: #ffffff;">{{COMPANY_NAME}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Row: Industry -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.3); width: 40%;">Industry</td>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; font-weight: 500; color: #ffffff;">{{COMPANY_INDUSTRY}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Row: Website -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.3); width: 40%;">Website</td>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; font-weight: 500; color: #A78BFA;">{{COMPANY_WEBSITE}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Row: Admin name -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.3); width: 40%;">Admin Name</td>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; font-weight: 500; color: #ffffff;">{{ADMIN_FIRST_NAME}} {{ADMIN_LAST_NAME}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Row: Admin email -->
+                <tr>
+                  <td style="padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.3); width: 40%;">Admin Email</td>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; font-weight: 500; color: #ffffff;">{{ADMIN_EMAIL}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Row: Submitted at -->
+                <tr>
+                  <td style="padding: 14px 20px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.3); width: 40%;">Submitted</td>
+                        <td style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13px; font-weight: 500; color: #ffffff;">{{SUBMITTED_AT}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+              </table>
+
+              <!-- Review notice box -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+                     style="background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2); border-radius: 10px; margin-bottom: 32px;">
+                <tr>
+                  <td style="padding: 18px 22px;">
+                    <p style="margin: 0 0 6px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 600; color: #A78BFA; letter-spacing: 0.04em; text-transform: uppercase;">
+                      ⏱ &nbsp; Action Required
+                    </p>
+                    <p style="margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; font-weight: 300; color: rgba(255,255,255,0.5); line-height: 1.65;">
+                      This application is pending your review. Log in to the admin panel to
+                      <span style="color: rgba(255,255,255,0.8); font-weight: 400;">approve or reject</span>
+                      the registration. Approvals should be completed within
+                      <span style="color: #A78BFA; font-weight: 500;">24 hours</span>
+                      to ensure a smooth onboarding experience for the company.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA button -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ADMIN_PANEL_URL}}"
+                       style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #A78BFA); color: #ffffff; text-decoration: none; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 15px; font-weight: 600; padding: 15px 40px; border-radius: 10px; letter-spacing: 0.02em;">
+                      Review Application →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Fallback link -->
+              <p style="margin: 24px 0 0; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.2); line-height: 1.6; text-align: center;">
+                Or copy this link into your browser:<br>
+                <span style="color: #7c3aed; word-break: break-all;">{{ADMIN_PANEL_URL}}</span>
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background: rgba(255,255,255,0.03); border-top: 1px solid rgba(255,255,255,0.06); padding: 24px 40px; text-align: center;">
+              <p style="margin: 0 0 6px; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.2);">
+                © 2026 Propel. All rights reserved.
+              </p>
+              <p style="margin: 0; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 12px; color: rgba(255,255,255,0.2); line-height: 1.6;">
+                This is an automated notification sent to Propel platform administrators only.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Card -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
