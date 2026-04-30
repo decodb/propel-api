@@ -1,4 +1,5 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+/* eslint-disable prettier/prettier */
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { CreateAdminWithCompanyDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
@@ -107,12 +108,13 @@ export class RegisterService {
         };
       });
 
+      const verifyUrl = `http://localhost:${process.env.PORT}/register/verify-email?token=${result.token}`;
       // Send emails after transaction commits successfully
       await this.mail.sendMail({
         to: result.createdUser.email,
         template: MailTemplate.EMAIL_VERIFICATION,
         context: {
-          VERIFICATION_URL: result.token,
+          VERIFICATION_URL: verifyUrl,
         },
       });
 
@@ -146,6 +148,63 @@ export class RegisterService {
       await this.cloudinaryService.deleteFile(cloudinaryResponse.public_id);
       throw error;
     }
+  }
+
+  async verifyEmail(token: string) {
+    const incomingHash = crypto
+      .createHash('sha256')
+      .update(token)
+      .digest('hex');
+
+    const result = await this.prisma.$transaction(async (tx) => {
+      // find the token
+      const emailVerificationToken = await tx.emailVerificationToken.findUnique({
+          where: {
+            token: incomingHash,
+          },
+      });
+
+      const now = new Date();
+
+      // check if the token is valid
+      if (!emailVerificationToken || (now > new Date(emailVerificationToken.expiresAt))) {
+        throw new NotFoundException('Invalid token or email already verified.');
+      }
+
+      // check if the user is already verified
+      const user = await tx.user.findUnique({
+        where: {
+          id: emailVerificationToken?.userId
+        },
+        select: {
+          isVerified: true
+        }
+      })
+
+      if (user?.isVerified) {
+        throw new ConflictException('Invalid token or email already verified. ');
+      }
+
+      await tx.user.update({
+        where: {
+          id: emailVerificationToken?.userId
+        },
+        data: {
+          isVerified: true
+        }
+      })
+
+      await tx.emailVerificationToken.delete({
+        where: {
+          token: incomingHash
+        }
+      })
+
+      return { message: 'Email Verified. Please continue to login. ' }
+      
+    })
+
+    return result.message
   }
 
   private toSlug(text: string): string {

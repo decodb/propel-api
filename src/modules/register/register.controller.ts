@@ -2,7 +2,10 @@ import {
   BadRequestException,
   Body,
   Controller,
+  NotFoundException,
+  Get,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -24,5 +27,14 @@ export class RegisterController {
       throw new BadRequestException('File is required. ');
     }
     return this.registerService.register(dto, file);
+  }
+
+  @Get('/verify-email')
+  verifyEmail(@Query('token') token: string) {
+    if (!token) {
+      return new NotFoundException('Token missing or invalid. ');
+    }
+
+    return this.registerService.verifyEmail(token);
   }
 }
