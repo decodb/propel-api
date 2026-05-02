@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { RegisterModule } from './modules/register/register.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { RegisterModule } from './modules/register/register.module';
       envFilePath: '.env',
     }),
     RegisterModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
