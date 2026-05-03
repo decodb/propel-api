@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
@@ -67,6 +71,37 @@ export class AuthService {
     });
 
     return result;
+  }
+
+  async adminLogin(dto: LoginDto) {
+    const admin = await this.prisma.admin.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+
+    if (!admin) {
+      throw new NotFoundException('Invalid credentials. ');
+    }
+
+    const passwordsMatch = await bcrypt.compare(
+      dto.password,
+      admin.passwordHash,
+    );
+
+    if (!passwordsMatch) {
+      throw new UnauthorizedException('Invalid credentials. ');
+    }
+
+    const { id, email } = admin;
+
+    const { accessToken, refreshToken } = this.generateTokens({
+      sub: id,
+      email,
+      role: 'SYSTEM_ADMIN',
+    });
+
+    return { accessToken, refreshToken };
   }
 
   private generateTokens(payload: JwtPayload) {
