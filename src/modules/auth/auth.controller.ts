@@ -3,12 +3,15 @@ import {
   Body,
   Controller,
   Post,
+  Query,
   Res,
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
 import { getEnv } from 'src/common/config/env';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import { forgotPasswordDto } from './dto/forgot-password.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -82,5 +85,28 @@ export class AuthController {
     res.cookie('access_token', '', { maxAge: 0 });
     res.cookie('refresh_token', '', { maxAge: 0, path: '/auth/refresh' });
     return { message: 'Logged out' };
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto: forgotPasswordDto) {
+    if (!dto.email) {
+      throw new BadRequestException('Please fill in the require information. ');
+    }
+
+    const message = await this.authService.forgotPassword(dto.email);
+    return message;
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Query('token') token: string,
+    @Body() dto: ResetPasswordDto,
+  ) {
+    if (!token) {
+      throw new BadRequestException('Token missing or is invalid');
+    }
+
+    const message = await this.authService.resetPassword(token, dto.password);
+    return message;
   }
 }
