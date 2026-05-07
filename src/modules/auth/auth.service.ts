@@ -48,7 +48,7 @@ export class AuthService {
       });
 
       if (!user || !user.isVerified) {
-        throw new UnauthorizedException(
+        throw new NotFoundException(
           'Invalid credentials or email not verified. ',
         );
       }

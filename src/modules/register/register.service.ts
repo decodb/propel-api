@@ -142,7 +142,7 @@ export class RegisterService {
       // Return without exposing the token
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { token: _, ...response } = result;
-      return response;
+      return  { message: 'Registration successfully completed. An email with an verification link has been sent to your email. ' };
     } catch (error) {
       // Rollback cloudinary upload if transaction failed
       await this.cloudinaryService.deleteFile(cloudinaryResponse.public_id);
