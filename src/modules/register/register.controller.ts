@@ -32,7 +32,7 @@ export class RegisterController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (!file) {
-      throw new BadRequestException('File is required. ');
+      throw new BadRequestException('Company logo image is required. ');
     }
     return this.registerService.register(dto, file);
   }

@@ -82,3 +82,8 @@ export class CreateAdminWithCompanyDto {
   @Type(() => CreateCompanyDto)
   company!: CreateCompanyDto;
 }
+
+export class AuthRegisterResponseDto {
+  @ApiProperty({ example: 'user@example.com' })
+  email!: string;
+}

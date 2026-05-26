@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/core/prisma/prisma.service';
-import { CreateAdminWithCompanyDto } from './dto/register.dto';
+import { AuthRegisterResponseDto, CreateAdminWithCompanyDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { CloudinaryService } from 'src/integrations/cloudinary/cloudinary.service';
 import * as crypto from 'crypto';
@@ -9,6 +9,7 @@ import { MailService } from 'src/core/mail/mail.service';
 import { MailTemplate } from 'src/core/mail/mail.types';
 import { UploadApiResponse } from 'cloudinary';
 import { ConfigService } from '@nestjs/config';
+import { Prisma } from 'src/generated/prisma/client';
 
 @Injectable()
 export class RegisterService {
@@ -19,7 +20,7 @@ export class RegisterService {
     private config: ConfigService,
   ) {}
 
-  async register(dto: CreateAdminWithCompanyDto, file: Express.Multer.File) {
+  async register(dto: CreateAdminWithCompanyDto, file: Express.Multer.File): Promise<AuthRegisterResponseDto> {
     const { user, company } = dto;
 
     // Upload image before transaction so we can rollback if DB fails
@@ -30,6 +31,15 @@ export class RegisterService {
       throw new InternalServerErrorException(
         'Image upload failed. Please try again.',
       );
+    }
+
+    // Check if email already exists before doing anything
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email: user.email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Email already exists. Please try with a different email. ');
     }
 
     try {
@@ -139,13 +149,19 @@ export class RegisterService {
         },
       });
 
-      // Return without exposing the token
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { token: _, ...response } = result;
-      return  { message: 'Registration successfully completed. An email with an verification link has been sent to your email. ' };
+      return  { email: result.createdUser.email };
     } catch (error) {
       // Rollback cloudinary upload if transaction failed
       await this.cloudinaryService.deleteFile(cloudinaryResponse.public_id);
+
+      // Handle race condition on duplicate email
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002' &&
+        (error.meta?.target as string[])?.includes('email')
+      ) {
+        throw new ConflictException('Email already exists');
+      }
       throw error;
     }
   }
