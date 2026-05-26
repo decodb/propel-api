@@ -21,6 +21,9 @@ async function bootstrap() {
   // cookies
   app.use(cookieParser());
 
+  // cors
+  app.enableCors(); // accept all origins for now
+
   // Swagger UI
   const config = new DocumentBuilder()
     .setTitle('My API')
